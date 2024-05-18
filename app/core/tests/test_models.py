@@ -1,8 +1,12 @@
 """
 Tests for models.
 """
+from decimal import Decimal
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+
+from core import models
 
 
 class ModelTest(TestCase):
@@ -46,3 +50,19 @@ class ModelTest(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_course(self):
+        """Test creating a course is successful."""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'testpass123',
+        )
+        course = models.Course.objects.create(
+            user=user,
+            title='Sample course name',
+            duration_hours=5,
+            price=Decimal('49.99'),
+            description='Sample course description.',
+        )
+
+        self.assertEqual(str(course), course.title)
