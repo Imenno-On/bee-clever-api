@@ -13,3 +13,10 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ['id', 'title', 'duration_hours', 'price', 'link']
         read_only_fields = ['id']
+
+
+class CourseDetailSerializer(CourseSerializer):
+    """Serializer for course detail view."""
+
+    class Meta(CourseSerializer.Meta):
+        fields = CourseSerializer.Meta.fields + ['description']

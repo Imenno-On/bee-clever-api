@@ -12,11 +12,18 @@ from rest_framework.test import APIClient
 
 from core.models import Course
 
-from course.serializers import CourseSerializer
+from course.serializers import (
+    CourseSerializer,
+    CourseDetailSerializer,
+)
 
 
 COURSES_URL = reverse('course:course-list')
 
+
+def detail_url(course_id):
+    """Create and return a course detail URL."""
+    return reverse('course:course-detail', args=[course_id])
 
 def create_course(user, **params):
     """create and return a sample course."""
@@ -83,4 +90,14 @@ class PrivateCourseAPITest(TestCase):
         courses = Course.objects.filter(user=self.user)
         serializer = CourseSerializer(courses, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
+    def test_get_course_detail(self):
+        """Test get course details."""
+        course = create_course(user=self.user)
+
+        url = detail_url(course.id)
+        res = self.client.get(url)
+
+        serializer = CourseDetailSerializer(course)
         self.assertEqual(res.data, serializer.data)
