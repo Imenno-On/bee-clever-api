@@ -25,6 +25,7 @@ def detail_url(course_id):
     """Create and return a course detail URL."""
     return reverse('course:course-detail', args=[course_id])
 
+
 def create_course(user, **params):
     """create and return a sample course."""
     defaults = {

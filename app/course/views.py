@@ -26,4 +26,3 @@ class CourseViewSet(viewsets.ModelViewSet):
             return serializers.CourseSerializer
 
         return self.serializer_class
-
