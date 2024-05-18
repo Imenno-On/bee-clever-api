@@ -41,6 +41,11 @@ def create_course(user, **params):
     return course
 
 
+def create_user(**params):
+    """Create and return a new user."""
+    return get_user_model().objects.create_user(**params)
+
+
 class PublicCourseAPITests(TestCase):
     """Test unauthenticated API requests."""
 
@@ -102,3 +107,18 @@ class PrivateCourseAPITest(TestCase):
 
         serializer = CourseDetailSerializer(course)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_course(self):
+        """Test creating a course."""
+        payload = {
+            'title': 'Sample Course',
+            'duration_hours': 20,
+            'price': Decimal('10.00')
+        }
+        res = self.client.post(COURSES_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        course = Course.objects.get(id=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(getattr(course, k), v)
+        self.assertEqual(course.user, self.user)

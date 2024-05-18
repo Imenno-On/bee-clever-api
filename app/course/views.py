@@ -26,3 +26,7 @@ class CourseViewSet(viewsets.ModelViewSet):
             return serializers.CourseSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new course."""
+        serializer.save(user=self.request.user)
