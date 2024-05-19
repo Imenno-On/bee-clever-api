@@ -13,6 +13,7 @@ from course import views
 
 router = DefaultRouter()
 router.register('courses', views.CourseViewSet)
+router.register('tags', views.TagViewSet)
 
 app_name = 'course'
 
