@@ -10,7 +10,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Course
+from core.models import (
+    Course,
+    Tag,
+)
 
 from course.serializers import (
     CourseSerializer,
@@ -199,3 +202,89 @@ class PrivateCourseAPITest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(Course.objects.filter(id=course.id).exists())
+
+    def test_create_course_with_new_tags(self):
+        """Test creating a course with new tags."""
+        payload = {
+            'title': 'Harvard CS109',
+            'duration_hours': 35,
+            'price': Decimal('99.99'),
+            'tags': [{'name': 'Computer Science'}, {'name': 'Harvard'}],
+        }
+        res = self.client.post(COURSES_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        courses = Course.objects.filter(user=self.user)
+        self.assertEqual(courses.count(), 1)
+        course = courses[0]
+        self.assertEqual(course.tags.count(), 2)
+        for tag in payload['tags']:
+            exists = course.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_course_with_existing_tags(self):
+        """Test creating a course with existing tag."""
+        tag_python = Tag.objects.create(user=self.user, name='Python')
+        payload = {
+            'title': 'Python Generation',
+            'duration_hours': 15,
+            'price': Decimal('0'),
+            'tags': [{'name': 'Python'}, {'name': 'Free'}],
+        }
+        res = self.client.post(COURSES_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        courses = Course.objects.filter(user=self.user)
+        self.assertEqual(courses.count(), 1)
+        course = courses[0]
+        self.assertEqual(course.tags.count(), 2)
+        self.assertIn(tag_python, course.tags.all())
+        for tag in payload['tags']:
+            exists = course.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_tag_on_update(self):
+        """Test creating a tag on update of a recipe."""
+        course = create_course(user=self.user)
+
+        payload = {'tags': [{'name': 'Python'}]}
+        url = detail_url(course.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_tag = Tag.objects.get(user=self.user, name='Python')
+        self.assertIn(new_tag, course.tags.all())
+
+    def test_update_recipe_assign_tag(self):
+        """Test assigning an existing tag when updating a recipe."""
+        tag_html = Tag.objects.create(user=self.user, name='HTML')
+        course = create_course(user=self.user)
+        course.tags.add(tag_html)
+
+        tag_css = Tag.objects.create(user=self.user, name='CSS')
+        payload = {'tags': [{'name': 'CSS'}]}
+        url = detail_url(course.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(tag_css, course.tags.all())
+        self.assertNotIn(tag_html, course.tags.all())
+
+    def test_clear_course_tags(self):
+        """Test clearing a course tags."""
+        tag = Tag.objects.create(user=self.user, name='HTML')
+        course = create_course(user=self.user)
+        course.tags.add(tag)
+
+        payload = {'tags': []}
+        url = detail_url(course.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(course.tags.count(), 0)
