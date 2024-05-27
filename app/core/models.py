@@ -18,7 +18,7 @@ def course_image_file_path(instance, filename):
     ext = os.path.splitext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads', 'recipe', filename)
+    return os.path.join('uploads', 'course', filename)
 
 
 class UserManager(BaseUserManager):
@@ -68,6 +68,7 @@ class Course(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
     link = models.CharField(max_length=255, blank=True)
     tags = models.ManyToManyField('Tag')
+    image = models.ImageField(null=True, upload_to = course_image_file_path)
 
     def __str__(self):
         return self.title
