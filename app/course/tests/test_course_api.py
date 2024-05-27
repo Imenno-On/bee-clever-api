@@ -180,7 +180,7 @@ class PrivateCourseAPITest(TestCase):
         self.assertEqual(course.user, self.user)
 
     def test_update_user_returns_error(self):
-        """Test changing the recipe user returns error."""
+        """Test changing the course user returns error."""
         new_user = create_user(email='user2@example.com', password='test12345')
         course = create_course(user=self.user)
 
@@ -259,7 +259,7 @@ class PrivateCourseAPITest(TestCase):
             self.assertTrue(exists)
 
     def test_create_tag_on_update(self):
-        """Test creating a tag on update of a recipe."""
+        """Test creating a tag on update of a course."""
         course = create_course(user=self.user)
 
         payload = {'tags': [{'name': 'Python'}]}
@@ -270,8 +270,8 @@ class PrivateCourseAPITest(TestCase):
         new_tag = Tag.objects.get(user=self.user, name='Python')
         self.assertIn(new_tag, course.tags.all())
 
-    def test_update_recipe_assign_tag(self):
-        """Test assigning an existing tag when updating a recipe."""
+    def test_update_course_assign_tag(self) -> object:
+        """Test assigning an existing tag when updating a course."""
         tag_html = Tag.objects.create(user=self.user, name='HTML')
         course = create_course(user=self.user)
         course.tags.add(tag_html)
@@ -301,21 +301,20 @@ class PrivateCourseAPITest(TestCase):
 
 class ImageUploadTests(TestCase):
     """Tests for the image upload API."""
-
-    def setUP(self):
+    def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             'user@example.com',
             'password123'
         )
-        self.client_force_authenticate(self.user)
+        self.client.force_authenticate(self.user)
         self.course = create_course(user=self.user)
 
     def tearDown(self):
         self.course.image.delete()
 
     def test_upload_image(self):
-        """"Test uploading ann image to a course."""
+        """Test uploading ann image to a course."""
         url = image_upload_url(self.course.id)
         with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
             img = Image.new('RGB', (10,10))

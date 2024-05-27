@@ -64,3 +64,13 @@ class CourseDetailSerializer(CourseSerializer):
 
     class Meta(CourseSerializer.Meta):
         fields = CourseSerializer.Meta.fields + ['description']
+
+
+class CourseImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images to courses."""
+
+    class Meta:
+        model = Course
+        fields = ['id', 'image']
+        read_only_fields = ['id']
+        extra_kwargs = {'image': {'required': 'True'}}
