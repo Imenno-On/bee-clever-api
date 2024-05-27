@@ -317,11 +317,11 @@ class ImageUploadTests(TestCase):
         """Test uploading ann image to a course."""
         url = image_upload_url(self.course.id)
         with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
-            img = Image.new('RGB', (10,10))
-            img.save(image_file, format = 'JPEG')
+            img = Image.new('RGB', (10, 10))
+            img.save(image_file, format='JPEG')
             image_file.seek(0)
             payload = {'image': image_file}
-            res = self.client.post(url, payload, format = 'multipart')
+            res = self.client.post(url, payload, format='multipart')
 
         self.course.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -331,7 +331,7 @@ class ImageUploadTests(TestCase):
     def test_upload_image_bad_request(self):
         """Test uploading invalid image."""
         url = image_upload_url(self.course.id)
-        payload = {'image':'notanimage'}
-        res = self.client.post(url, payload, format = 'multipart')
+        payload = {'image': 'notanimage'}
+        res = self.client.post(url, payload, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

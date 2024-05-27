@@ -83,7 +83,7 @@ class ModelTest(TestCase):
     @patch('core.models.uuid.uuid4')
     def test_course_file_name_uuid(self, mock_uuid):
         """Test generating image path."""
-        uuid = 'teat-uuid'
+        uuid = 'test-uuid'
         mock_uuid.return_value = uuid
         file_path = models.course_image_file_path(None, 'example.jpg')
 
