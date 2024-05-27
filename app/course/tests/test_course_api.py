@@ -306,7 +306,7 @@ class PrivateCourseAPITest(TestCase):
         tag2 = Tag.objects.create(user=self.user, name='Middle')
         c1.tags.add(tag1)
         c2.tags.add(tag2)
-        c3 = create_course(user=self.user, title='Java')
+        c3 = create_course(user=self.user, title='Ruby')
 
         params = {'tags': f'{tag1.id},{tag2.id}'}
         res = self.client.get(COURSES_URL, params)
