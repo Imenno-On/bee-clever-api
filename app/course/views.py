@@ -31,19 +31,20 @@ class CourseViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def _params_to_inits(self, qs):
+    def _params_to_ints(self, qs):
         """Convert a list of string to integers"""
         return [int(str_id) for str_id in qs.split(',')]
-
 
     def get_queryset(self):
         """Retrieve courses for authenticated user."""
         tags = self.request.query_params.get('tags')
         queryset = self.queryset
         if tags:
-            tag_ids = self._params_to_inits(tags)
-            queryset = queryset.filter(tags__id__in=tags_ids)
-        return self.queryset.filter(user=self.request.user).order_by('id').distinct()
+            tag_ids = self._params_to_ints(tags)
+            queryset = queryset.filter(tags__id__in=tag_ids)
+        return self.queryset.filter(
+            user=self.request.user
+        ).order_by('-id').distinct()
 
     def get_serializer_class(self):
         """Return serializer class for request."""

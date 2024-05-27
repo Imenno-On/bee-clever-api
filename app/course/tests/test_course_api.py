@@ -300,13 +300,13 @@ class PrivateCourseAPITest(TestCase):
 
     def test_filter_by_tags(self):
         """Test filtering courses by tags."""
-        c1 = create_course(user=self.user, title="Python")
-        c2 = create_course(user=self.user, title="PHP")
+        c1 = create_course(user=self.user, title='Python')
+        c2 = create_course(user=self.user, title='PHP')
         tag1 = Tag.objects.create(user=self.user, name='Junior')
         tag2 = Tag.objects.create(user=self.user, name='Middle')
         c1.tags.add(tag1)
         c2.tags.add(tag2)
-        c3 = create_course(user=self.user, title="Java")
+        c3 = create_course(user=self.user, title='Java')
 
         params = {'tags': f'{tag1.id},{tag2.id}'}
         res = self.client.get(COURSES_URL, params)
@@ -317,7 +317,6 @@ class PrivateCourseAPITest(TestCase):
         self.assertIn(s1.data, res.data)
         self.assertIn(s2.data, res.data)
         self.assertNotIn(s3.data, res.data)
-
 
 
 class ImageUploadTests(TestCase):
