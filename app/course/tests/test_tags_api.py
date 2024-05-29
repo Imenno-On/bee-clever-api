@@ -107,7 +107,7 @@ class PrivateTagsApiTests(TestCase):
         tag1 = Tag.objects.create(user=self.user, name='Long training')
         tag2 = Tag.objects.create(user=self.user, name='Middle training')
         course = Course.objects.create(
-            title ='Go',
+            title='Go',
             duration_hours=10,
             price=Decimal('12'),
             user=self.user,
@@ -143,4 +143,3 @@ class PrivateTagsApiTests(TestCase):
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
 
         self.assertEqual(len(res.data), 1)
-
